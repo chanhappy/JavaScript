@@ -1,0 +1,14 @@
+{
+  "name": "js-memory-leak",
+  "version": "1.0.0",
+  "description": "",
+  "main": "js-memory-leak.js",
+  "scripts": {
+    "dev": "node js-memory-leak.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "heapdump": "^0.3.15"
+  }
+}
