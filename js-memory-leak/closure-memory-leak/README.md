@@ -1,7 +1,7 @@
 # 概述
 **内存泄漏**指由于疏忽或错误造成程序**未能释放**已经不再使用的内存。  
 *JavaScript的垃圾回收机制：V8在运行时自动回收不再需要使用的对象内存。基于根不可达来回收不使用的内存。如下图*
-<img src="./images/GC2,jpg" width="50%">  
+<img src="./images/GC2.jpg" width="50%">  
 9，10无法被访问到，可以被回收了。
 如何定义
 接下来我们通过一个JS内存泄露实例（[A surprising JavaScript memory leak found at Meteor](https://blog.meteor.com/)）来分析探讨。
