@@ -11,6 +11,7 @@ heapdump记录当前的堆内存（heap）快照，即JS运行所用到的所有
 ```javascript
 let heapdump = require("heapdump");
 let fs = require("fs");
+let num = 0;
 
 let theThing = null;
 let replaceThing = function () {
@@ -32,9 +33,10 @@ let replaceThing = function () {
     });
 
     //记录堆快照
-    heapdump.writeSnapshot('./heap-snapshot/' + Date.now() + '.heapsnapshot', () => {
+    heapdump.writeSnapshot('./heap-snapshot/' + 'Snapshot'+ num + '.heapsnapshot', () => {
         console.log("heap snapshot file has been saving");
     })
+    num ++;
 };
  
 setInterval(replaceThing, 1000);
@@ -42,8 +44,20 @@ setInterval(replaceThing, 1000);
 上述代码是测试程序的主要运行逻辑。setInterval定时器每1000ms调用replaceThing方法，通过heapdump.writeSnapshot记录下每次执行的堆快照。
 ## 3. 在heap-snapshot文件夹中生成内存快照
 运行测试程序之后，在heap-snapshot文件夹中生成了.heapsnapshot后缀的内存快照。打开谷歌浏览器，F12快捷键调出控制台，选择Memory面板，在面板左侧点击鼠标右键，选择需要分析的内存快照，将其加载进来，如下图：
-<img src="./images/memory1.png">  
-## 4. 可通过heap-snapshot文件夹中的内存快照分析内存泄漏问题
+<img src="./images/memory1.jpg">  
+## 4. 通过heap-snapshot文件夹中的内存快照分析内存泄漏
+切换到Comparison视图，通过比较多个快照之间的差异来找出内存泄露的对象。
+<img src="./images/memory6.jpg">  
+对比结果的列表中，我们重点关注的是变量（#Delta）的值，可以看到每次调用replaceThing方法的时候，新增的对象个数。
+Snapshot0与Snapshot1对比
+<img src="./images/memory2.jpg">  
+Snapshot1与Snapshot2对比
+<img src="./images/memory3.jpg">  
+Snapshot2与Snapshot3对比
+<img src="./images/memory4.jpg">  
+Snapshot3与Snapshot4对比
+<img src="./images/memory5.jpg">  
+对比结果
 # 内存快照分析
 # 结论
 

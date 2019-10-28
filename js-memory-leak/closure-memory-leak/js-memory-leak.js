@@ -1,5 +1,6 @@
 let heapdump = require("heapdump");
 let fs = require("fs");
+let num = 0;
 
 let theThing = null;
 let replaceThing = function () {
@@ -21,9 +22,10 @@ let replaceThing = function () {
     });
 
     //记录堆快照
-    heapdump.writeSnapshot('./heap-snapshot/' + Date.now() + '.heapsnapshot', () => {
+    heapdump.writeSnapshot('./heap-snapshot/' + 'Snapshot'+ num + '.heapsnapshot', () => {
         console.log("heap snapshot file has been saving");
     })
+    num ++;
 };
  
 setInterval(replaceThing, 1000);
