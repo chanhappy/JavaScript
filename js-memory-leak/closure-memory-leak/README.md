@@ -45,20 +45,27 @@ setInterval(replaceThing, 1000);
 ## 3. 在heap-snapshot文件夹中生成内存快照
 运行测试程序之后，在heap-snapshot文件夹中生成了.heapsnapshot后缀的内存快照。打开谷歌浏览器，F12快捷键调出控制台，选择Memory面板，在面板左侧点击鼠标右键，选择需要分析的内存快照，将其加载进来，如下图：
 <img src="./images/memory1.jpg">  
-## 4. 通过heap-snapshot文件夹中的内存快照分析内存泄漏
+# 内存快照分析
+## 1. 对比heap-snapshot文件夹中的内存快照
 切换到Comparison视图，通过比较多个快照之间的差异来找出内存泄露的对象。
 <img src="./images/memory6.jpg">  
-对比结果的列表中，我们重点关注的是变量（#Delta）的值，可以看到每次调用replaceThing方法的时候，新增的对象个数。
-Snapshot0与Snapshot1对比
+上图对比结果的列表中，我们重点关注的是变量（#Delta）的值，每次调用replaceThing方法的时候，新增的对象个数。    
+Snapshot0与Snapshot1对比如下：  
 <img src="./images/memory2.jpg">  
-Snapshot1与Snapshot2对比
+Snapshot1与Snapshot2对比如下：  
 <img src="./images/memory3.jpg">  
-Snapshot2与Snapshot3对比
+Snapshot2与Snapshot3对比如下：  
 <img src="./images/memory4.jpg">  
-Snapshot3与Snapshot4对比
+Snapshot3与Snapshot4对比如下：  
 <img src="./images/memory5.jpg">  
-对比结果
-# 内存快照分析
+通过多次对比，每次调用replaceThing方法，<kbd>(closure)</kbd>，<kbd>(string)</kbd>，<kbd>Object</kbd>，<kbd>system/Context</kbd> 四者的内存都会稳定增加。
+## 2. 对比结果分析
+### 1. closure(闭包)
+首先分析closure的堆内存：
+<img src="./images/analyse1.jpg">  
+### 2. string
+### 3. Object
+### 4. system/Context
 # 结论
 
 
