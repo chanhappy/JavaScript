@@ -1,10 +1,10 @@
 # 概述
-**内存泄漏**指由于疏忽或错误造成程序**未能释放**已经不再使用的内存。  
-JavaScript的垃圾回收机制：**V8在运行时自动回收不再需要使用的对象内存。基于根不可达来回收不使用的内存。**如下图
+**内存泄漏** 指由于疏忽或错误造成程序 **未能释放** 已经不再使用的内存。  
+JavaScript的垃圾回收机制：**V8在运行时自动回收不再需要使用的对象内存，基于根不可达来回收不使用的内存。** 如下图
 <img src="./images/GC2.jpg" width="50%">  
 沿着1这个根对象的引用链往下走，9，10无法被访问到，可以被回收了。  
 接下来我们通过一个JS内存泄露实例（[A surprising JavaScript memory leak found at Meteor](https://blog.meteor.com/)）来分析探讨。
-# 环境工作
+# 准备工作
 ## 1. 执行命令：npm install 安装依赖[heapdump](https://www.npmjs.com/package/heapdump)
 heapdump记录当前的堆内存（heap）快照，即JS运行所用到的所有对象，对象所占用的内存大小，引用关系等。
 ## 2. 执行命令：npm run dev  运行测试程序
@@ -41,7 +41,8 @@ setInterval(replaceThing, 1000);
 ```
 上述代码是测试程序的主要运行逻辑。setInterval定时器每1000ms调用replaceThing方法，通过heapdump.writeSnapshot记录下每次执行的堆快照。
 ## 3. 在heap-snapshot文件夹中生成内存快照
-运行测试程序之后，在heap-snapshot文件夹中生成了.heapsnapshot后缀的内存快照。
+运行测试程序之后，在heap-snapshot文件夹中生成了.heapsnapshot后缀的内存快照。打开谷歌浏览器，F12快捷键调出控制台，选择Memory面板，在面板左侧点击鼠标右键，选择需要分析的内存快照，将其加载进来，如下图：
+<img src="./images/memory1.png">  
 ## 4. 可通过heap-snapshot文件夹中的内存快照分析内存泄漏问题
 # 内存快照分析
 # 结论
