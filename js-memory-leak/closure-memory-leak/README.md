@@ -70,10 +70,10 @@ Snapshot3与Snapshot4对比如下：
 **总结：** 有两个theThing的引用未释放，即theThing@61153与previous（<kbd>let theThing = null;</kbd>的theThing对象）  
 
 接下来继续查看第二次，第三次，第四次，第五次调用replaceThing方法获取的堆快照；  
-<img src="./images/shot1.jpg" width="25%">
-<img src="./images/shot2.jpg" width="25%">
-<img src="./images/shot3.jpg" width="25%">
-<img src="./images/shot4.jpg" width="25%">  
+<img src="./images/shot1.jpg" width="20%">
+<img src="./images/shot2.jpg" width="20%">
+<img src="./images/shot3.jpg" width="20%">
+<img src="./images/shot4.jpg" width="20%">  
 对比分析之后，replaceThing每调用一次，就会多出一个previous的引用。
 ### 2. string
 ### 3. Object
