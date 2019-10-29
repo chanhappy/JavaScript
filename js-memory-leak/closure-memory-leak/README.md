@@ -62,7 +62,13 @@ Snapshot3与Snapshot4对比如下：
 ## 2. 对比结果分析
 ### 1. closure(闭包)
 首先分析closure的堆内存：
-<img src="./images/analyse1.jpg">  
+<img src="./images/analyse1.jpg">    
+
+接下来分析闭包中的someMethod方法，下图是第一次调用replaceThing方法获取的堆快照：
+<img src="./images/analyse2.jpg">  
+如上图，someMethod@61157被theThing@61153引用，展开theThing@61153这个对象之后，可以看到：（1）它被Content@1083（即replaceThing函数上下文对象）引用；（2）previous在这里指：调用theThing@61153方法前的theThing调用，即replaceThing方法外定义的<kbd>let theThing = null;</kbd>的调用；（3）previous被Content@1091（即replaceThing函数外的上下文对象）引用，Content@1083被repleceThing@1089引用。
+总结：有两个theThing的引用未释放，即theThing@61153与previous（<kbd>let theThing = null;</kbd>）
+
 ### 2. string
 ### 3. Object
 ### 4. system/Context
