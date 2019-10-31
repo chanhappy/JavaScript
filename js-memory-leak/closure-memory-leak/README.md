@@ -74,7 +74,12 @@ Snapshot3与Snapshot4对比如下：
 <img src="./images/shot2.jpg" width="23%">
 <img src="./images/shot3.jpg" width="24%">
 <img src="./images/shot4.jpg" width="25%">  
-对比分析之后，replaceThing每调用一次，就会多出一个previous的引用。
+对比分析之后，总结replaceThing每调用一次，就会比上次调用多出一个previous对象。所以新的引用持续创建，旧的引用并未释放。
+接下来对这些不断增加的previous做深入分析。探讨为什么从第一次到第五次调用期间，不断创建出新的theThing对象，但是旧的theThing对象（previous）却一直占用内存未被回收，导致每调用一次就多出了一个previous对象（即旧的theThing）。  
+备注：当创建新的theThing对象时，上一次创建的的theThing对象未被释放回收，会成为previous对象。  
+针对第五次快照Snapshot4的theThing最初生成的的previous展开：  
+<img src="./images/shot5.jpg">  
+
 ### 2. string
 ### 3. Object
 ### 4. system/Context
