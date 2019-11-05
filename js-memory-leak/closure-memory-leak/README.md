@@ -66,7 +66,7 @@ Snapshot3与Snapshot4对比如下：
 
 接下来分析闭包中的someMethod方法，下图是第一次调用replaceThing方法获取的堆快照：
 <img src="./images/analyse2.jpg">  
-如上图，someMethod@61157被theThing@61153引用，展开theThing@61153这个对象之后，可以看到：（1）它被Content@1083（即replaceThing函数上下文对象）引用；（2）previous在这里指：调用theThing@61153前一次的theThing（即replaceThing方法外定义的theThing<kbd>let theThing = null;</kbd>）；（3）previous被Content@1091（即replaceThing函数外的上下文对象）引用，Content@1083被repleceThing@1089引用。  
+如上图，someMethod@61157被theThing@61153引用，展开theThing@61153这个对象之后，可以看到：（1）它被Content@1083（即replaceThing函数上下文）引用；（2）previous在这里指：调用theThing@61153前一次的theThing（即replaceThing方法外定义的theThing<kbd>let theThing = null;</kbd>）；（3）previous被Content@1091（即replaceThing函数外的上下文）引用，Content@1083被repleceThing@1089引用。  
 **总结：** 有两个theThing的引用未释放，即theThing@61153与previous（<kbd>let theThing = null;</kbd>的theThing对象）  
 
 接下来继续查看第二次，第三次，第四次，第五次调用replaceThing方法获取的堆快照；  
@@ -74,19 +74,29 @@ Snapshot3与Snapshot4对比如下：
 <img src="./images/shot2.jpg" width="23%">
 <img src="./images/shot3.jpg" width="24%">
 <img src="./images/shot4.jpg" width="25%">  
-对比分析之后，总结replaceThing每调用一次，就会比上次调用多出一个previous对象。所以新的引用持续创建，旧的引用并未释放。
-接下来对这些不断增加的previous做深入分析。探讨为什么从第一次到第五次调用期间，不断创建出新的theThing对象，但是旧的theThing对象（previous）却一直占用内存未被回收，导致每调用一次就多出了一个previous对象（即旧的theThing）。  
+对比分析之后，总结replaceThing每调用一次，就会比上次调用多出一个previous对象。所以新的对象不断创建，旧的对象并未释放。
+接下来对这些不断增加的previous做深入分析。探讨为什么从第一次到第五次调用期间，不断创建出新的theThing对象，但是旧的theThing对象（previous）却一直占用内存未被回收，导致每次调用多出一个previous对象（即旧的theThing）。  
 备注：当创建新的theThing对象时，上一次创建的的theThing对象未被释放回收，会成为previous对象。  
+
 针对第五次快照Snapshot4的theThing最初生成的的previous展开：  
 <img src="./images/shot5.jpg">  
+>图中的context：一进入replaceThing，someMethod的作用域会创建一个>Context上下文，如图蓝色框框起来的都是replaceThing或someMethod对>Context上下文的直接引用。
+-------------------------------------------------------------
+我们可以看到，上图红色框的someMethod与originalThing形成了引用链。为什么会这样呢？虽然unused没有被使用，但是someMethod与unused分享闭包作用域，unused引用了originalThing，所以someMethod对originalThing也有了引用关系（细说：someMethod会直接创建一个Context上下文，这个Context会引用originalThing。形成someMethod-->Context-->originalThing引用链, 例如图中4-5-6，7-8-9， 10-11-12，13-14-15）。
 
+代码执行过程：
+第一次执行setInterval：调用replaceThing@1089,
 ### 2. string
 ### 3. Object
 ### 4. system/Context
 # 结论
 
+每一个闭包作用域携带一个指向大数组的间接的引用，造成严重的内存泄漏。
+在 replaceThing 的最后添加 originalThing = null 。
 
-
+每个函数都有一个词法环境，编译时产生词法作用域。
+函数执行时会产生Context上下文，这个上下文存储函数中的变量
+如果作用域本身嵌套在一个闭包中，那么新创建的Context 上下文将会指向父对象。 这可能会导致内存泄漏。---> 函数嵌套函数，内部函数将创建一个新上下文.
 
 
 
