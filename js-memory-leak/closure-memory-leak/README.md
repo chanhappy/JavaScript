@@ -83,18 +83,35 @@ Snapshot3与Snapshot4对比如下：
 图中的context：一进入replaceThing，someMethod的作用域会创建一个>Context上下文，如图蓝色框框起来的都是replaceThing或someMethod对>Context上下文的直接引用。
 我们可以看到，上图红色框的someMethod与originalThing形成了引用链。为什么会这样呢？虽然unused没有被使用，但是someMethod与unused分享闭包作用域，unused引用了originalThing，所以someMethod对originalThing也有了引用关系（细说：someMethod会直接创建一个Context上下文，这个Context会引用originalThing。形成someMethod-->Context-->originalThing引用链, 例如图中4-5-6，7-8-9， 10-11-12，13-14-15）。
 
-代码执行过程：
-第一次执行setInterval：调用replaceThing@1089,
 ### 2. string
+接下来查看下string，如下图：
+<img src="./images/str1.jpg"> 
+如上图，可以看到每次执行replaceThing方法，会增加一个长度为10000的字符串************，这个字符串被被闭包作用域中的longStr引用，造成严重的内存泄漏。
+
 ### 3. Object
+查看Object，如下图：
+<img src="./images/obj1.jpg"> 
+如上图，每次执行replaceThing方法，会增加一个Object对象，而这个Object对象正好就是theThing引用的对象：
+```javascript
+{
+    longStr: new Array(10000).join('*'),
+    someMethod: function () {
+        console.log(1111);
+    }
+}
+```
+
 ### 4. system/Context
+查看system/Context，如下图：
+<img src="./images/content1.jpg"> 
+如上图，因为someMethod与unused分享闭包作用域，每次执行replaceThing方法，会增加一个system/Context上下文，而它正好被someMethod与unused直接引用。
+
 # 结论
 
-每一个闭包作用域携带一个指向大数组的间接的引用，造成严重的内存泄漏。
 在 replaceThing 的最后添加 originalThing = null 。
 
 每个函数都有一个词法环境，编译时产生词法作用域。
-函数执行时会产生Context上下文，这个上下文存储函数中的变量
+
 如果作用域本身嵌套在一个闭包中，那么新创建的Context 上下文将会指向父对象。 这可能会导致内存泄漏。---> 函数嵌套函数，内部函数将创建一个新上下文.
 
 
