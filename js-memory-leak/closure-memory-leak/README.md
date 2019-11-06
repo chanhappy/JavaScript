@@ -80,8 +80,7 @@ Snapshot3与Snapshot4对比如下：
 
 针对第五次快照Snapshot4的theThing最初生成的的previous展开：  
 <img src="./images/shot5.jpg">  
->图中的context：一进入replaceThing，someMethod的作用域会创建一个>Context上下文，如图蓝色框框起来的都是replaceThing或someMethod对>Context上下文的直接引用。
--------------------------------------------------------------
+图中的context：一进入replaceThing，someMethod的作用域会创建一个>Context上下文，如图蓝色框框起来的都是replaceThing或someMethod对>Context上下文的直接引用。
 我们可以看到，上图红色框的someMethod与originalThing形成了引用链。为什么会这样呢？虽然unused没有被使用，但是someMethod与unused分享闭包作用域，unused引用了originalThing，所以someMethod对originalThing也有了引用关系（细说：someMethod会直接创建一个Context上下文，这个Context会引用originalThing。形成someMethod-->Context-->originalThing引用链, 例如图中4-5-6，7-8-9， 10-11-12，13-14-15）。
 
 代码执行过程：
