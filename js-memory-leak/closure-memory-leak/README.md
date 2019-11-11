@@ -81,7 +81,7 @@ Snapshot3与Snapshot4对比如下：
 针对第五次快照Snapshot4的theThing最初生成的的previous展开：  
 <img src="./images/shot5.jpg">  
 图中的context：一进入replaceThing，someMethod的作用域会创建一个>Context上下文，如图蓝色框框起来的都是replaceThing或someMethod对>Context上下文的直接引用。
-我们可以看到，上图红色框的someMethod与originalThing形成了引用链。为什么会这样呢？虽然unused没有被使用，但是someMethod与unused分享闭包作用域，unused引用了originalThing，所以someMethod对originalThing也有了引用关系（细说：someMethod会直接创建一个Context上下文，这个Context会引用originalThing。形成someMethod-->Context-->originalThing引用链, 例如图中4-5-6，7-8-9， 10-11-12，13-14-15）。
+我们可以看到，上图红色框的someMethod与originalThing形成了引用链。为什么会这样呢？虽然unused没有被使用，但是someMethod与unused分享闭包作用域，unused引用了originalThing，所以someMethod对originalThing也有了引用关系（细说：someMethod会直接创建一个Context上下文，这个Context会引用originalThing。形成someMethod-->Context-->originalThing引用链, 例如图中4-5-6，7-8-9， 10-11-12，13-14-15）。如何接触这个引用链呢？留个思考问题，后文给出答案。
 
 ### 2. string
 接下来查看下string，如下图：
@@ -108,11 +108,42 @@ Snapshot3与Snapshot4对比如下：
 
 # 结论
 
-在 replaceThing 的最后添加 originalThing = null 。
+Meteor的[博文](http://info.meteor.com/blog/an-interesting-kind-of-javascript-memory-leak)增加了 originalThing = null 修复了此问题。如下：
+```javascript
+let heapdump = require("heapdump");
+let fs = require("fs");
+let num = 0;
 
-每个函数都有一个词法环境，编译时产生词法作用域。
+let theThing = null;
+let replaceThing = function () {
+    let originalThing = theThing;
+    let unused = function () {
+        if (originalThing)
+            console.log("hi");
+    };
+    theThing = {
+        longStr: new Array(10000).join('*'),
+        someMethod: function () {
+            console.log(1111);
+        }
+    };
 
-如果作用域本身嵌套在一个闭包中，那么新创建的Context 上下文将会指向父对象。 这可能会导致内存泄漏。---> 函数嵌套函数，内部函数将创建一个新上下文.
+    //创建heap-snapshot文件夹
+    fs.mkdir('./heap-snapshot/', ()=>{
+        console.info("dump dir created");
+    });
+
+    //记录堆快照
+    heapdump.writeSnapshot('./heap-snapshot/' + 'Snapshot'+ num + '.heapsnapshot', () => {
+        console.log("heap snapshot file has been saving");
+    })
+    num ++;
+    originalThing = null;
+};
+ 
+setInterval(replaceThing, 1000);
+```
+增加了originalThing = null;这句代码之后，解除了someMethod与originalThing形成的引用链（可参考2.1closure的分析）。
 
 
 
