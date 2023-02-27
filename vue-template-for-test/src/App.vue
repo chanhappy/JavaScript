@@ -1,16 +1,13 @@
 <template>
-  <DocxPreview />
   <CreatedTest />
 </template>
 
 <script>
-import DocxPreview from './components/docx-preview/DocxPreview.vue'
 import CreatedTest from './components/created-test-for-async/CreatedTest.vue'
 
 export default {
   name: 'App',
   components: {
-    DocxPreview,
     CreatedTest
   }
 }
